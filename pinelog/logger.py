@@ -10,14 +10,17 @@ from .log_entry_builder import (
 def log(f):
     def inner(*args):
         try:
-            print(build_invocation_log_entry("class_name1", f.__name__, args))
+            full_name = f.__qualname__
+            class_name = full_name.split('.')[0] if '.' in full_name else None
+
+            print(build_invocation_log_entry(class_name, f.__name__, args))
             result = f(*args)
-            print(build_leave_log_entry("class_name1", f.__name__, result))
+            print(build_leave_log_entry(class_name, f.__name__, result))
             return result
         except Exception:
             print(
                 build_exception_log_entry(
-                    "class_name1", f.__name__, traceback.format_exc()
+                    class_name, f.__name__, traceback.format_exc()
                 )
             )
             raise
