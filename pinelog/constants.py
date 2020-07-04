@@ -1,7 +1,6 @@
 class PayloadKeys:
-    ClassNameKey = "ClassName"
+    ClassNameKey = "Class"
     MethodKey = "Method"
     ArgsKey = "Args"
-    ReturnTypeKey = "Return type"
     ReturnValueKey = "Return value"
     ExceptionKey = "Exception"

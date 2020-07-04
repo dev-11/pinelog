@@ -1,4 +1,7 @@
 import traceback
+import functools
+from datetime import datetime as dt
+from .log_entry import LogEntry
 
 from .log_entry_builder import (
     build_invocation_log_entry,
@@ -8,17 +11,18 @@ from .log_entry_builder import (
 
 
 def log(f):
-    def inner(*args):
+    @functools.wraps(f)
+    def inner(*args, **kwargs):
         try:
             full_name = f.__qualname__
             class_name = full_name.split('.')[0] if '.' in full_name else None
 
-            print(build_invocation_log_entry(class_name, f.__name__, args))
-            result = f(*args)
-            print(build_leave_log_entry(class_name, f.__name__, result))
+            _log(build_invocation_log_entry(class_name, f.__name__, args))
+            result = f(*args, **kwargs)
+            _log(build_leave_log_entry(class_name, f.__name__, result))
             return result
         except Exception:
-            print(
+            _log(
                 build_exception_log_entry(
                     class_name, f.__name__, traceback.format_exc()
                 )
@@ -26,3 +30,7 @@ def log(f):
             raise
 
     return inner
+
+
+def _log(log_entry: LogEntry):
+    print(f'{dt.now().isoformat()}|{log_entry.log_level}|{log_entry.log_type}|{log_entry.payload}')
